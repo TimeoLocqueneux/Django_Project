@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style/profile.css' %}">
+    <title>Profile Page</title>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{% static 'img/logo.png' %}" alt="" class="img-logo">
+        </div>
+        <div class="header-txt">
+            <h1>{{username}} USERNAME</h1>
+        </div>
+        <a href="/main" class="header-home-button"><img src="{% static 'img/home.png' %}" alt="" class="user"></a>
+    </header>
+    <main>
+        <div class="graphs">
+            <div class="graph">
+                <h2>Utilisateurs qui partagent avec vous</h2>
+                <img src="{% static 'img/exemple_graph.png' %}" alt="">
+            </div>
+            <div class="graph">
+                <h2>Utilisateurs avec qui vous partagez</h2>
+                <img src="{% static 'img/exemple_graph.png' %}" alt="">
+            </div>
+            <div class="graph">
+                <h2>Vos types de fichiers</h2>
+                <img src="{% static 'img/exemple_graph.png' %}" alt="">
+            </div>
+        </div>
+    </main>
+</body>
+</html>
