@@ -9,3 +9,4 @@ class TodoItem(models.Model):
 
 #python manage.py makemigrations
 #python manage.py migrate 
+#zob humide frere kiya hua hai
