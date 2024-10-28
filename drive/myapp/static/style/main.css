@@ -86,7 +86,7 @@ main {
     display: flex;
     flex-direction: column;
     width: 20%;
-    background-color: #f5f5f5; /* Light grey */
+    background-color: #f5f5f5;
     color: #333;
     padding: 20px;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
@@ -166,14 +166,35 @@ main {
 .files{
     margin: 30px 20px 30px 20px;
 }
+.file{
+    display: flex;
+    flex-direction: row;
+    font-size: 1.3em;
+}
+a{
+    text-decoration: none;
+    color: #333;
+}
+a:hover{
+    text-decoration: underline;
+}
+.name{
+    width: 300px;
+    margin-right: 445px;
+}
+.date{
+    margin-right: 255px;
+}
+
 .infos{
     border-bottom: solid 1px black;
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: space-between;
 }
 .infos-name{
     margin-right: 300px;
+    margin-left: 20px;
 }
 .infos H1{
     font-size: 1.3em;
@@ -219,4 +240,48 @@ main {
 .tri-choice:hover{
     cursor: pointer;
     opacity: 0.9;
+}
+
+.popup-new-folder{
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    width: 20%;
+    background-color: #FF416C;
+    color: #f5f5f5;
+    padding: 13px;
+    border-radius: 5px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+.new-folder-title{
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+.new-folder-name{
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+}
+.new-folder-name input{
+    padding: 5px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: none;
+}
+.new-folder-name button{
+    padding: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.new-folder-name button:hover{
+    opacity: 0.93;
+}
+.new-folder-annuler{
+    cursor: pointer;
+    margin-bottom: 10px;
 }
