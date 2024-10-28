@@ -29,7 +29,7 @@
         <div class="explorer">
             <div class="explorer-head">
                 <div class="path">
-                    <H1>/fichier/dossier/...../.png</H1>
+                    <H1>{{directory}}</H1>
                 </div>
                 <div class="sorting-button">
                     <img src="{% static 'img/edit.png' %}" alt="">
@@ -42,7 +42,13 @@
                     <H1>Dernière modification</H1>
                     <H1>Taille du fichier</H1>
                 </div>
-                <div class="files">les dossiers apparaitront ici</div>
+                <div class="files">
+                    <ul>
+                        {% for file in files %}
+                            <li>{{ file }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
         </div>
     <div class="popup-tri">
