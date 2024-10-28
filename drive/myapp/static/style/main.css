@@ -163,6 +163,9 @@ main {
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.files{
+    margin: 30px 20px 30px 20px;
+}
 .infos{
     border-bottom: solid 1px black;
     display: flex;
