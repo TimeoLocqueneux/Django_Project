@@ -38,23 +38,28 @@
                 </div>
             </div>
             <div class="explorer-files">
-                <div class="infos">
-                    <H1 class="infos-name">Nom</H1>
-                    <H1>Propriétaire</H1>
-                    <H1>Dernière modification</H1>
-                    <H1>Taille du fichier</H1>
-                </div>
-                <div class="files">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Propriétaire</th>
+                            <th>Dernière modification</th>
+                            <th>Taille du fichier</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {% for file in files %}
-                            <div class="file">
-                                <div class="name">
+                            <tr class="file">
+                                <td class="name">
                                     <a href="{% static 'img/' %}{{ file.name }}" target="_blank">{{ file.name }}</a>
-                                </div>
-                                <div class="date">{{ file.mtime }}</div>
-                                <div class="size">{{ file.size }} Ko</div>
-                            </div>
+                                </td>
+                                <td class="owner">USERNAME</td> <!-- Placeholder for owner -->
+                                <td class="date">{{ file.mtime }}</td>
+                                <td class="size">{{ file.size }} Ko</td>
+                            </tr>
                         {% endfor %}
-                </div>
+                    </tbody>
+                </table>
             </div>
         </div>
     <div class="popup-tri">
