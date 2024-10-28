@@ -1,11 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-# Create your models here.
-
-class TodoItem(models.Model):
-    title = models.CharField(max_length=200)
-    completed = models.BooleanField(default=False)
-    
+class User(models.Model):
+  email = models.CharField(max_length=255)
+  password = models.CharField(max_length=255)
 
 #python manage.py makemigrations
 #python manage.py migrate 

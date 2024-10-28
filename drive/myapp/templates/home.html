@@ -1,6 +1,21 @@
- {% extends "base.html" %} {% block title %}Home{% endblock %}
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
 
- {% block content %}
-   <h1>Welcome to my Django App</h1>
-   <p>This is the home page of my Django app.</p>
- {% endblock %}
+{% block content %}
+<h1>Welcome to my Django App</h1>
+<p>This is the home page of my Django app.</p>
+
+<h2>Register</h2>
+<form method="post" action="{% url 'register' %}">
+  {% csrf_token %}
+  {{ register_form.as_p }}
+  <button type="submit" name="register">Register</button>
+</form>
+
+<h2>Login</h2>
+<form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+  {{ login_form.as_p }}
+  <button type="submit" name="login">Login</button>
+</form>
+{% endblock %}
