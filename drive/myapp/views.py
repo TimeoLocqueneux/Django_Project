@@ -1,6 +1,9 @@
+import shutil 
 import os
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, get_object_or_404
+from django.http import JsonResponse
 from datetime import datetime
+from.models import Fichier, Dossier
 
 # Create your views here.
 from django.shortcuts import render, HttpResponse, redirect
@@ -67,8 +70,6 @@ def main(request):
 
 def profile(request):
     return render(request, "profile.html")
-
-    
 
 def success_view(request):
     return render(request, 'success.html')
