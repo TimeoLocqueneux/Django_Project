@@ -1,17 +1,15 @@
 import os
 import tkinter as tk
 from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
-from django.http import JsonResponse
-from datetime import datetime
 from.models import Fichier, Dossier
-
-# Create your views here.
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from datetime import datetime
 from .forms import RegisterForm,LoginForm
-from .models import User  # Assuming you have a User model
 from tkinter import filedialog
+from django.contrib import messages
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+
 
 def get_files_info(directory):
     files_info = []
@@ -41,12 +39,7 @@ def get_files_info(directory):
                 'mtime': dir_mtime,
                 'type': 'directory'
             })
-    return files_infofrom django.contrib import messages
-from django import forms
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.models import User
-
-
+    return files_info
 
 
 def login_register_view(request):
@@ -93,11 +86,6 @@ def login_register_view(request):
 
 
 
-
-
-
-
-
 def main(request):
     # Obtenir le chemin absolu du répertoire source du projet
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -125,38 +113,9 @@ def main(request):
 def profile(request):
     return render(request, "profile.html")
 
-def success_view(request):
-    return render(request, 'success.html')
 
-def register_view(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            User.objects.create(email=email, password=password)
-            return redirect('home')
-    else:
-        form = UserForm()
-    return render(request, 'register.html', {'form': form})
 
-def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            try:
-                user = User.objects.get(email=email)
-                if user.password == password:
-                    return redirect('success')
-                else:
-                    form.add_error('password', 'Incorrect password')
-            except User.DoesNotExist:
-                form.add_error('email', 'Email not found')
-    else:
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+
 
 
 def import_file(request):
