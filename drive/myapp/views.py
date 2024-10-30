@@ -1,15 +1,14 @@
-import shutil 
 import os
-from django.shortcuts import render, HttpResponse, get_object_or_404
-from django.http import JsonResponse
-from datetime import datetime
-from.models import Fichier, Dossier
+import tkinter as tk
 
 # Create your views here.
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from datetime import datetime
 from .forms import UserForm,LoginForm
 from .models import User  # Assuming you have a User model
+from tkinter import filedialog
 
 
 
@@ -103,3 +102,14 @@ def login_view(request):
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
+
+
+def import_file(request):
+    if request.method == 'POST' and request.FILES['file']:
+        uploaded_file = request.FILES['file']
+        file_path = os.path.join('uploads/', uploaded_file.name)
+        with open(file_path, 'wb+') as destination:
+            for chunk in uploaded_file.chunks():
+                destination.write(chunk)
+        return redirect('main')
+    return render(request, 'main.html', {'error': 'Aucun fichier sélectionné.'})

@@ -21,13 +21,21 @@
     </header>
 
     <main>
-        <div class="left-bar">
+        <div class="left-bar">  
             <div class="back bar"><p>RETOUR</p></div>
             <div class="home bar"><p>HOME</p></div>
-            <div class="import-file bar"><p>IMPORTER UN FICHIER</p></div>
+            <div class="import-file bar" onclick="document.getElementById('file-input').click()">
+                <p>IMPORTER UN FICHIER</p>
+            </div>
             <div class="delete-file bar"><p>SUPPRIMER UN FICHIER</p></div>
             <div class="create-folder bar"><p>AJOUTER UN DOSSIER</p></div>
         </div>
+
+        <form id="upload-form" action="{% url 'import_file' %}" method="post" enctype="multipart/form-data" style="display: none;">
+            {% csrf_token %}
+            <input type="file" id="file-input" name="file" onchange="submitFile()">
+        </form>
+
         <div class="explorer">
             <div class="explorer-head">
                 <div class="path">
@@ -108,5 +116,10 @@
             popupNewFolder.style.display = 'flex';
         });
     });
+
+    function submitFile() {
+        // Soumettre le formulaire lorsque le fichier est sélectionné
+        document.getElementById('upload-form').submit();
+    }
 </script>
 </html>
