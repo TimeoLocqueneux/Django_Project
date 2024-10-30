@@ -1,14 +1,9 @@
 import os
-import tkinter as tk
-from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
-from.models import Fichier, Dossier
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
-from datetime import datetime
 from .forms import RegisterForm,LoginForm
-from tkinter import filedialog
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from datetime import datetime
 
 
 def get_files_info(directory):
@@ -86,7 +81,7 @@ def login_register_view(request):
 
 
 
-def main(request):
+def main(request, path=''):
     # Obtenir le chemin absolu du répertoire source du projet
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
