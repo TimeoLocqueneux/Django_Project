@@ -11,4 +11,5 @@ urlpatterns = [
     path('login_view/', views.login_view, name='login'),
     path('import-file/', views.import_file, name='import_file'),
     path('create-folder/', views.create_folder, name='create_folder'),
+    path('<path:path>/', views.main, name='main_with_path'),
     ]

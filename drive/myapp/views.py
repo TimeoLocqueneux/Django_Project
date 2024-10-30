@@ -10,6 +10,35 @@ from .forms import UserForm,LoginForm
 from .models import User  # Assuming you have a User model
 from tkinter import filedialog
 
+def get_files_info(directory):
+    files_info = []
+    for root, dirs, files in os.walk(directory):
+        if root != directory:
+            dirs.clear()  # Prevents os.walk from going into subdirectories
+            continue
+        for name in files:
+            file_path = os.path.join(root, name)
+            file_size = os.path.getsize(file_path)
+            file_mtime = os.path.getmtime(file_path)
+            file_mtime = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d')
+            files_info.append({
+                'name': os.path.relpath(file_path, directory),
+                'size': (file_size / 1000).__int__(),
+                'mtime': file_mtime,
+                'type': 'file'
+            })
+        for name in dirs:
+            dir_path = os.path.join(root, name)
+            dir_size = sum(os.path.getsize(os.path.join(dir_path, f)) for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f)))
+            dir_mtime = os.path.getmtime(dir_path)
+            dir_mtime = datetime.fromtimestamp(dir_mtime).strftime('%Y-%m-%d')
+            files_info.append({
+                'name': os.path.relpath(dir_path, directory),
+                'size': (dir_size / 1000).__int__(),
+                'mtime': dir_mtime,
+                'type': 'directory'
+            })
+    return files_info
 
 
 def home(request):
@@ -44,28 +73,29 @@ def home(request):
 def login(request):
     return render(request, "login.html")
 
-def main(request):
+def main(request, path=''):
     # Obtenir le chemin absolu du répertoire source du projet
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
-    # Naviguer dans le sous-dossier 'myapp/static/img'
-    images_pour_site = os.path.join(project_root, 'myapp', 'static', 'img')
+    base_dir = os.path.join(project_root, 'uploads')
+    current_dir = os.path.join(base_dir, path)
     
-    # Lister les fichiers et les dossiers dans le sous-dossier 'myapp/static/img'
-    files_info = []
-    for file_name in os.listdir(images_pour_site):
-        file_path = os.path.join(images_pour_site, file_name)
-        if os.path.isfile(file_path):
-            file_size = os.path.getsize(file_path)
-            file_mtime = os.path.getmtime(file_path)
-            file_mtime = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d')
-            files_info.append({
-                'name': file_name,
-                'size': (file_size/1000).__int__(),
-                'mtime': file_mtime
-            })
+    if not os.path.exists(current_dir):
+        current_dir = base_dir
     
-    return render(request, 'main.html', {'files': files_info, 'directory': images_pour_site})
+   
+    drive_index = current_dir.find('uploads')
+    if drive_index != -1:
+        cut_directory = current_dir[drive_index + len('uploads') + 1:]
+        cut_directory2 = cut_directory
+    if not cut_directory:
+        cut_directory = None
+        cut_directory2 = ''
+ 
+
+    files_info = get_files_info(current_dir)
+
+    return render(request, 'main.html', {'files': files_info, 'directory': current_dir, 'cut_directory' : cut_directory, 'cut_directory2': cut_directory2} )
 
 def profile(request):
     return render(request, "profile.html")
@@ -107,26 +137,38 @@ def login_view(request):
 def import_file(request):
     if request.method == 'POST' and request.FILES['file']:
         uploaded_file = request.FILES['file']
-        file_path = os.path.join('bdd/uploads/', uploaded_file.name)
+        path = request.POST.get('path', '')
+        
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.join(project_root, 'uploads')
+        current_dir = os.path.join(base_dir, path)
+        
+        if not os.path.exists(current_dir):
+            current_dir = base_dir
+        
+        file_path = os.path.join(current_dir, uploaded_file.name)
         with open(file_path, 'wb+') as destination:
             for chunk in uploaded_file.chunks():
                 destination.write(chunk)
-        return redirect('main')
+        return redirect('main_with_path', path=path)
     return render(request, 'main.html', {'error': 'Aucun fichier sélectionné.'})
 
 def create_folder(request):
     if request.method == 'POST':
         folder_name = request.POST.get('folder_name')
+        path = request.POST.get('path', '')
+
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.join(project_root, 'uploads')
+        current_dir = os.path.join(base_dir, path)
         
-        # Définir le chemin du dossier bdd
-        folder_path = os.path.join('bdd', folder_name)
+        folder_path = os.path.join(current_dir, folder_name)
         
-        # Vérifier si le nom du dossier est valide et s'il n'existe pas déjà
         if folder_name and not os.path.exists(folder_path):
-            os.makedirs(folder_path)  # Créer le dossier
-            return redirect('main')  # Rediriger vers la page principale
+            os.makedirs(folder_path)
+            return redirect('main_with_path', path=path)
         else:
             error_message = "Nom de dossier invalide ou dossier existe déjà."
-            return render(request, 'main.html', {'error': error_message})
+            return render(request, 'main.html', {'error': error_message, 'path': path})
 
     return redirect('main')

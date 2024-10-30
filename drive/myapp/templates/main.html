@@ -23,7 +23,9 @@
     <main>
         <div class="left-bar">  
             <div class="back bar"><p>RETOUR</p></div>
-            <div class="home bar"><p>HOME</p></div>
+            <a class="home bar" href="/main">
+                <p>HOME</p>
+            </a>
             <div class="import-file bar" onclick="document.getElementById('file-input').click()">
                 <p>IMPORTER UN FICHIER</p>
             </div>
@@ -33,6 +35,7 @@
 
         <form id="upload-form" action="{% url 'import_file' %}" method="post" enctype="multipart/form-data" style="display: none;">
             {% csrf_token %}
+            <input type="hidden" name="path" value="{{ directory }}">
             <input type="file" id="file-input" name="file" onchange="submitFile()">
         </form>
 
@@ -59,7 +62,12 @@
                         {% for file in files %}
                             <tr class="file">
                                 <td class="name">
-                                    <a href="{% static 'img/' %}{{ file.name }}" target="_blank">{{ file.name }}</a>
+                                    {% if file.type == 'file' %}
+                                    
+                                        <a href="/uploads/{{cut_directory2}}/{{ file.name }}" target="_blank">{{ file.name }}</a>
+                                    {% elif file.type == 'directory' %}
+                                        <a href="{% url 'main_with_path' cut_directory|add:'/'|add:file.name %}">{{ file.name }}/</a>
+                                    {% endif %}
                                 </td>
                                 <td class="owner">USERNAME</td> <!-- Placeholder for owner -->
                                 <td class="date">{{ file.mtime }}</td>
@@ -85,7 +93,8 @@
         <form action="{% url 'create_folder' %}" method="post" class="new-folder-name">
             {% csrf_token %}
             <input type="text" name="folder_name" class="new-folder-name-input" placeholder="Nom du dossier">
-            <button type="submit" class="new-folder-validate">VALIDER</button>
+            <input type="hidden" name="path" value="{{ directory }}">
+            <button type="submit">Créer</button>
         </form>
         <div class="new-folder-annuler">Annuler</div>
     </div>
