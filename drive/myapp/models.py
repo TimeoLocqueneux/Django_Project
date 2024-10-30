@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
 
 class TodoItem(models.Model):
     title = models.CharField(max_length=200)
@@ -21,8 +22,10 @@ class Fichier(models.Model):
         return self.title
 
 class User(models.Model):
+  name  = models.CharField(max_length=255, default="Jean")
   email = models.CharField(max_length=255)
   password = models.CharField(max_length=255)
+
 
 #python manage.py makemigrations
 #python manage.py migrate 

@@ -1,49 +1,70 @@
 import shutil 
 import os
-from django.shortcuts import render, HttpResponse, get_object_or_404
+from django.shortcuts import render, HttpResponse, get_object_or_404, redirect
 from django.http import JsonResponse
 from datetime import datetime
 from.models import Fichier, Dossier
 
 # Create your views here.
-from django.shortcuts import render, HttpResponse, redirect
 from django.contrib.auth import authenticate, login
-from .forms import UserForm,LoginForm
+from .forms import RegisterForm,LoginForm
 from .models import User  # Assuming you have a User model
+from django.contrib import messages
+from django import forms
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
 
 
 
-def home(request):
-    register_form = UserForm()
-    login_form = LoginForm()
 
+def login_register_view(request):
     if request.method == 'POST':
         if 'register' in request.POST:
-            register_form = UserForm(request.POST)
+            register_form = RegisterForm(request.POST)
+            login_form = LoginForm()
             if register_form.is_valid():
-                email = register_form.cleaned_data['email']
-                password = register_form.cleaned_data['password']
-                User.objects.create(email=email, password=password)
-                return redirect('home')
+                user = register_form.save()
+                login(request, user)
+                messages.success(request, "Inscription réussie ! Vous êtes maintenant connecté.")
+                return redirect('main')
+            else:
+                messages.error(request, "Il y a eu une erreur avec votre inscription.")
+                
         elif 'login' in request.POST:
             login_form = LoginForm(request.POST)
+            register_form = RegisterForm()
             if login_form.is_valid():
                 email = login_form.cleaned_data['email']
                 password = login_form.cleaned_data['password']
-                try:
-                    user = User.objects.get(email=email)
-                    if user.password == password:
-                        return redirect('success')
-                    else:
-                        login_form.add_error('password', 'Incorrect password')
-                except User.DoesNotExist:
-                    login_form.add_error('email', 'Email not found')
+                
+                # Authentification
+                user = authenticate(request, email=email, password=password)
+                if user is not None:
+                    login(request, user)
+                    messages.success(request, "Connexion réussie !")
+                    return redirect('main')
+                else:
+                    messages.error(request, "Email ou mot de passe invalide.")
+                    print("Authentification échouée pour l'email :", email)  # Debug
+                    return redirect('main')
+            else:
+                print("Le formulaire de connexion n'est pas valide.", login_form.errors)  # Debug
 
-    return render(request, 'home.html', {'register_form': register_form, 'login_form': login_form})
- 
+    else:
+        register_form = RegisterForm()
+        login_form = LoginForm()
+    
+    return render(request, 'login.html', {
+        'register_form': register_form,
+        'login_form': login_form
+    })
 
-def login(request):
-    return render(request, "login.html")
+
+
+
+
+
+
 
 def main(request):
     # Obtenir le chemin absolu du répertoire source du projet
@@ -71,35 +92,3 @@ def main(request):
 def profile(request):
     return render(request, "profile.html")
 
-def success_view(request):
-    return render(request, 'success.html')
-
-def register_view(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            User.objects.create(email=email, password=password)
-            return redirect('home')
-    else:
-        form = UserForm()
-    return render(request, 'register.html', {'form': form})
-
-def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            try:
-                user = User.objects.get(email=email)
-                if user.password == password:
-                    return redirect('success')
-                else:
-                    form.add_error('password', 'Incorrect password')
-            except User.DoesNotExist:
-                form.add_error('email', 'Email not found')
-    else:
-        form = LoginForm()
-    return render(request, 'login.html', {'form': form})
