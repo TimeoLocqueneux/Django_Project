@@ -1,0 +1,30 @@
+﻿Minimize
+ obj: 5 x_SR1 + 10 x_SR2 + 4 x_R1c1 + 5 x_R1c2 + 6 x_R2c1 + 4 x_R2c2 + 5 x_R3c2 + 7 x_R3c1 + 3 x_R4c1 + 6 x_R4c2
+
+Subject To
+ # Flow conservation at the source (S)
+ flow_S: x_SR1 + x_SR2 = 1
+
+ # Flow conservation at routers
+ flow_R1: x_SR1 = x_R1c1 + x_R1c2
+ flow_R2: x_SR2 = x_R2c1 + x_R2c2
+ flow_R3: x_R3c1 + x_R3c2 <= 1
+ flow_R4: x_R4c1 + x_R4c2 <= 1
+
+ # Ensure flow only goes to selected data centers
+ flow_c1: x_R1c1 + x_R2c1 + x_R3c1 + x_R4c1 = 1
+ flow_c2: x_R1c2 + x_R2c2 + x_R3c2 + x_R4c2 = 1
+
+Bounds
+ 0 <= x_SR1 <= 1
+ 0 <= x_SR2 <= 1
+ 0 <= x_R1c1 <= 1
+ 0 <= x_R1c2 <= 1
+ 0 <= x_R2c1 <= 1
+ 0 <= x_R2c2 <= 1
+ 0 <= x_R3c1 <= 1
+ 0 <= x_R3c2 <= 1
+ 0 <= x_R4c1 <= 1
+ 0 <= x_R4c2 <= 1
+
+End
