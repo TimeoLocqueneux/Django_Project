@@ -74,6 +74,14 @@
                                 <td class="owner">USERNAME</td> <!-- Placeholder for owner -->
                                 <td class="date">{{ file.mtime }}</td>
                                 <td class="size">{{ file.size }} Ko</td>
+                                <td class="options">
+                                    <div class="plus"><img src="{% static 'img/points.png' %}" alt=""></div>
+                                    <div class="popup-plus">
+                                        <img class="plus-rename" src="{% static 'img/rename.png' %}" alt="">
+                                        <img class="plus-download" src="{% static 'img/download.png' %}" alt="">
+                                        <img class="plus-delete" src="{% static 'img/delete.png' %}" alt="">
+                                    </div>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -112,6 +120,7 @@
         const popupNewFolder = document.querySelector('.popup-new-folder');
         const newFolderAnnuler = document.querySelector('.new-folder-annuler');
         const newFolder = document.querySelector('.create-folder');
+        const plusButtons = document.querySelectorAll('.plus');
 
         sortingButton.addEventListener('click', function() {
             if (popupTri.style.display === 'flex') {
@@ -127,6 +136,18 @@
         newFolder.addEventListener('click', function() {
             popupNewFolder.style.display = 'flex';
         });
+
+        plusButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const popup = this.nextElementSibling;
+                    if (popup.style.display === 'flex') {
+                        popup.style.display = 'none';
+                    } else {
+                        document.querySelectorAll('.popup-plus').forEach(p => p.style.display = 'none');
+                        popup.style.display = 'flex';
+                    }
+                });
+            });
     });
 
     function submitFile() {
