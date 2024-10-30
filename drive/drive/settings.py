@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -111,6 +112,11 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+UPLOADS_ROOT = os.path.join(BASE_DIR, 'uploads')
+
+# Define the URL prefix for uploaded files
+UPLOADS_URL = '/uploads/'
 
 
 # Static files (CSS, JavaScript, Images)

@@ -21,13 +21,26 @@
     </header>
 
     <main>
-        <div class="left-bar">
-            <div class="back bar"><p>RETOUR</p></div>
-            <div class="home bar"><p>HOME</p></div>
-            <div class="import-file bar"><p>IMPORTER UN FICHIER</p></div>
+        <div class="left-bar">  
+            <a class="back bar" href="javascript:history.back()">
+                <p>RETOUR</p>
+            </a>
+            <a class="home bar" href="/main">
+                <p>HOME</p>
+            </a>
+            <div class="import-file bar" onclick="document.getElementById('file-input').click()">
+                <p>IMPORTER UN FICHIER</p>
+            </div>
             <div class="delete-file bar"><p>SUPPRIMER UN FICHIER</p></div>
             <div class="create-folder bar"><p>AJOUTER UN DOSSIER</p></div>
         </div>
+
+        <form id="upload-form" action="{% url 'import_file' %}" method="post" enctype="multipart/form-data" style="display: none;">
+            {% csrf_token %}
+            <input type="hidden" name="path" value="{{ directory }}">
+            <input type="file" id="file-input" name="file" onchange="submitFile()">
+        </form>
+
         <div class="explorer">
             <div class="explorer-head">
                 <div class="path">
@@ -51,7 +64,12 @@
                         {% for file in files %}
                             <tr class="file">
                                 <td class="name">
-                                    <a href="{% static 'img/' %}{{ file.name }}" target="_blank">{{ file.name }}</a>
+                                    {% if file.type == 'file' %}
+                                    
+                                        <a href="/uploads/{{cut_directory2}}/{{ file.name }}" target="_blank">{{ file.name }}</a>
+                                    {% elif file.type == 'directory' %}
+                                        <a href="{% url 'main_with_path' cut_directory|add:'/'|add:file.name %}">{{ file.name }}/</a>
+                                    {% endif %}
                                 </td>
                                 <td class="owner">USERNAME</td> <!-- Placeholder for owner -->
                                 <td class="date">{{ file.mtime }}</td>
@@ -74,9 +92,11 @@
     </div>
     <div class="popup-new-folder">
         <div class="new-folder-title">Ajouter un dossier</div>
-        <form action="#" class="new-folder-name">
-            <input type="text" class="new-folder-name-input">
-            <button class="new-folder-validate">VALIDER</button>
+        <form action="{% url 'create_folder' %}" method="post" class="new-folder-name">
+            {% csrf_token %}
+            <input type="text" name="folder_name" class="new-folder-name-input" placeholder="Nom du dossier">
+            <input type="hidden" name="path" value="{{ directory }}">
+            <button type="submit">Créer</button>
         </form>
         <div class="new-folder-annuler">Annuler</div>
     </div>
@@ -108,5 +128,10 @@
             popupNewFolder.style.display = 'flex';
         });
     });
+
+    function submitFile() {
+        // Soumettre le formulaire lorsque le fichier est sélectionné
+        document.getElementById('upload-form').submit();
+    }
 </script>
 </html>
