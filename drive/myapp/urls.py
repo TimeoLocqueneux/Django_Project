@@ -9,5 +9,6 @@ urlpatterns = [
     path('success/', views.success_view, name='success'),
     path('register/', views.register_view, name='register'),
     path('login_view/', views.login_view, name='login'),
-    path('import-file/', views.import_file, name='import_file')
+    path('import-file/', views.import_file, name='import_file'),
+    path('create-folder/', views.create_folder, name='create_folder'),
     ]

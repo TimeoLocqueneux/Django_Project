@@ -82,9 +82,10 @@
     </div>
     <div class="popup-new-folder">
         <div class="new-folder-title">Ajouter un dossier</div>
-        <form action="#" class="new-folder-name">
-            <input type="text" class="new-folder-name-input">
-            <button class="new-folder-validate">VALIDER</button>
+        <form action="{% url 'create_folder' %}" method="post" class="new-folder-name">
+            {% csrf_token %}
+            <input type="text" name="folder_name" class="new-folder-name-input" placeholder="Nom du dossier">
+            <button type="submit" class="new-folder-validate">VALIDER</button>
         </form>
         <div class="new-folder-annuler">Annuler</div>
     </div>

@@ -107,9 +107,26 @@ def login_view(request):
 def import_file(request):
     if request.method == 'POST' and request.FILES['file']:
         uploaded_file = request.FILES['file']
-        file_path = os.path.join('uploads/', uploaded_file.name)
+        file_path = os.path.join('bdd/uploads/', uploaded_file.name)
         with open(file_path, 'wb+') as destination:
             for chunk in uploaded_file.chunks():
                 destination.write(chunk)
         return redirect('main')
     return render(request, 'main.html', {'error': 'Aucun fichier sélectionné.'})
+
+def create_folder(request):
+    if request.method == 'POST':
+        folder_name = request.POST.get('folder_name')
+        
+        # Définir le chemin du dossier bdd
+        folder_path = os.path.join('bdd', folder_name)
+        
+        # Vérifier si le nom du dossier est valide et s'il n'existe pas déjà
+        if folder_name and not os.path.exists(folder_path):
+            os.makedirs(folder_path)  # Créer le dossier
+            return redirect('main')  # Rediriger vers la page principale
+        else:
+            error_message = "Nom de dossier invalide ou dossier existe déjà."
+            return render(request, 'main.html', {'error': error_message})
+
+    return redirect('main')
