@@ -185,7 +185,45 @@ a{
 a:hover{
     text-decoration: underline;
 }
-
+.popup-plus{
+    height: 20px;
+    display: none;
+    flex-direction: row;
+}
+.options{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.plus{
+    height: 20px;
+    display: flex;
+}
+.plus img{
+    height: 100%;
+    cursor: pointer;
+}
+.popup-plus{
+    border: #333 solid 2px;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    justify-content: space-evenly;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+.popup-plus img{
+    cursor: pointer;
+}
+.plus-rename{
+    height: 110%;
+}
+.plus-delete{
+    height: 80%;
+}
+.plus-download{
+    height: 100%;
+}
 
 .popup-tri{
     display: none;
