@@ -217,9 +217,10 @@ a:hover{
 .popup-plus{
     border: #333 solid 2px;
     border-radius: 5px;
+    padding: 3px;
     justify-content: center;
     align-items: center;
-    width: 80px;
+    width: 110px;
     justify-content: space-evenly;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
@@ -233,6 +234,12 @@ a:hover{
     height: 80%;
 }
 .plus-download{
+    height: 100%;
+}
+.plus-move{
+    height: 80%;
+}
+.plus-copy{
     height: 100%;
 }
 
