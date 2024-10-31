@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from .forms import RegisterForm,LoginForm
 from django.contrib import messages
 from datetime import datetime
-
+from django.contrib.auth.decorators import login_required
 
 def get_files_info(directory):
     files_info = []
@@ -153,3 +153,11 @@ def create_folder(request):
             return render(request, 'main.html', {'error': error_message, 'path': path})
 
     return redirect('main')
+
+
+
+@login_required
+def my_view(request):
+    # Récupérer le nom d'utilisateur de l'utilisateur connecté
+    username = request.user.username
+    return render(request, 'mon_template.html', {'username': username})

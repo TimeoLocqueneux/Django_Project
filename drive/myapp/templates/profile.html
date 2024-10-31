@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     {% load static %}
@@ -7,13 +8,20 @@
     <link rel="stylesheet" href="{% static 'style/profile.css' %}">
     <title>Profile Page</title>
 </head>
+
 <body>
     <header>
         <div class="logo">
             <img src="{% static 'img/logo.png' %}" alt="" class="img-logo">
         </div>
         <div class="header-txt">
-            <h1>{{username}} USERNAME</h1>
+            <h1>
+                {% if user.is_authenticated %}
+                {{ user.username }}
+                {% else %}
+                USERNAME
+                {% endif %}
+            </h1>
         </div>
         <a href="/main" class="header-home-button"><img src="{% static 'img/home.png' %}" alt="" class="user"></a>
     </header>
@@ -34,4 +42,5 @@
         </div>
     </main>
 </body>
+
 </html>
