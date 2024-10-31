@@ -177,6 +177,15 @@ tr{
 }
 td{
     padding: 10px;
+    align-items: center;
+}
+.name{
+    display: flex;
+    flex-direction: row;
+}
+.type img{
+    height: 30px;
+    margin-right: 5px;
 }
 a{
     text-decoration: none;
@@ -185,6 +194,8 @@ a{
 a:hover{
     text-decoration: underline;
 }
+
+
 .popup-plus{
     height: 20px;
     display: none;

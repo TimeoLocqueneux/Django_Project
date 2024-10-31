@@ -17,11 +17,13 @@ def get_files_info(directory):
             file_size = os.path.getsize(file_path)
             file_mtime = os.path.getmtime(file_path)
             file_mtime = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d')
+            file_type = 'video' if name.endswith(('.avi', '.mp4', '.mkv')) else ('image' if name.endswith(('.jpg', '.png')) else ('texte' if name.endswith('.txt') else ('pdf' if name.endswith('.pdf') else ('excel' if name.endswith(('.csv', '.xlsx')) else 'other'))))
             files_info.append({
                 'name': os.path.relpath(file_path, directory),
                 'size': (file_size / 1000).__int__(),
                 'mtime': file_mtime,
-                'type': 'file'
+                'type': 'file',
+                'file_type': file_type
             })
         for name in dirs:
             dir_path = os.path.join(root, name)

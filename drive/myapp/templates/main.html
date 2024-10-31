@@ -64,8 +64,20 @@
                         {% for file in files %}
                             <tr class="file">
                                 <td class="name">
+                                    <div class="type">
+                                        {% if file.file_type == 'video' %}
+                                            <img src="{% static 'img/icons/video.png' %}" alt="Video File">
+                                        {% elif file.file_type == 'image' %}
+                                            <img src="{% static 'img/icons/image.png' %}" alt="Image File">
+                                        {% elif file.file_type == 'texte' %}
+                                            <img src="{% static 'img/icons/texte.png' %}" alt="Texte File">
+                                        {% elif file.file_type == 'pdf' %}
+                                            <img src="{% static 'img/icons/pdf.png' %}" alt="Pdf File">
+                                            {% elif file.file_type == 'excel' %}
+                                                <img src="{% static 'img/icons/excel.png' %}" alt="Calc File">
+                                        {% endif %}
+                                    </div>
                                     {% if file.type == 'file' %}
-                                    
                                         <a href="/uploads/{{cut_directory2}}/{{ file.name }}" target="_blank">{{ file.name }}</a>
                                     {% elif file.type == 'directory' %}
                                         <a href="{% url 'main_with_path' cut_directory|add:'/'|add:file.name %}">{{ file.name }}/</a>
