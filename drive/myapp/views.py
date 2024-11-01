@@ -140,7 +140,7 @@ def rename_file(request):
         new_file_path = os.path.join(current_dir, new_name)
         if new_name and not os.path.exists(new_file_path):
             os.rename(old_file_path, new_file_path)
-            return render(request, 'main.html', {'path': path})
+            return redirect('main_with_path', path=path)
         else:
             error_message = "Nom de fichier invalide ou fichier existe déjà."
             return render(request, 'main.html', {'error': error_message, 'path': path})
@@ -148,8 +148,11 @@ def rename_file(request):
 
 def delete_file(request):
     if request.method == 'POST':
-        file_name = request.POST.get('file_name')
-        path = request.POST.get('path', '')
+        body = json.loads(request.body)
+        print(body)
+        file_name = body.get('file_name')
+        path = body.get('path', '')
+        print(file_name, path)
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         base_dir = os.path.join(project_root, 'uploads')
         current_dir = os.path.join(base_dir, path)
