@@ -194,6 +194,31 @@
             });
         });
 
+        downloadbutton.forEach(button => {
+            button.addEventListener('click', function() {
+                const file = this.closest('.file');
+                const name = file.querySelector('.name a').innerText;
+                fetch('{% url "download_file" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({path: "{{ directory|escapejs }}", file_name: name })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.url);
+                    const link = document.createElement('a');
+                    link.href = data.url;
+                    link.download = name;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+            });
+        });
+
         sortingButton.addEventListener('click', function() {
             if (popupTri.style.display === 'flex') {
                 popupTri.style.display = 'none';

@@ -5,8 +5,9 @@ from .forms import RegisterForm,LoginForm
 from django.contrib import messages
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 import json
+
 
 
 def get_files_info(directory):
@@ -170,21 +171,19 @@ def delete_file(request):
 
 def download_file(request):
     if request.method == 'POST':
-        file_name = request.POST.get('file_name')
-        path = request.POST.get('path', '')
+        body = json.loads(request.body)
+        file_name = body.get('file_name')
+        path = body.get('path', '')
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         base_dir = os.path.join(project_root, 'uploads')
         current_dir = os.path.join(base_dir, path)
         file_path = os.path.join(current_dir, file_name)
         if os.path.exists(file_path):
-            with open(file_path, 'rb') as file:
-                response = HttpResponse(file.read(), content_type='application/force-download')
-                response['Content-Disposition'] = f'attachment; filename={file_name}'
-                return response
+            file_url = request.build_absolute_uri(os.path.join('uploads', path, file_name))
+            return JsonResponse({'url': file_url})
         else:
-            error_message = "Fichier introuvable."
-            return render(request, 'main.html', {'error': error_message, 'path': path})
-    return redirect('main')
+            return JsonResponse({'error': 'Fichier introuvable.'}, status=404)
+    return JsonResponse({'error': "Méthode non autorisée."}, status=405)
 
 
 
