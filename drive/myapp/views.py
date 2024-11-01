@@ -100,10 +100,10 @@ def login_register_view(request):
 def main(request, path=''):
     # Obtenir le chemin absolu du répertoire source du projet
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    
+
     base_dir = os.path.join(project_root, 'uploads')
     current_dir = os.path.join(base_dir, path)
-    
+
     if not os.path.exists(current_dir):
         current_dir = base_dir
     
@@ -115,14 +115,50 @@ def main(request, path=''):
     if not cut_directory:
         cut_directory = None
         cut_directory2 = ''
- 
+        
+    uploads_index = current_dir.find('uploads')
+    if uploads_index != -1:
+        viewer_path = current_dir[uploads_index:].replace('\\', '/')
+    else:
+        viewer_path = current_dir.replace('\\', '/')
 
     files_info = get_files_info(current_dir)
 
-    return render(request, 'main.html', {'files': files_info, 'directory': current_dir, 'cut_directory' : cut_directory, 'cut_directory2': cut_directory2} )
+    return render(request, 'main.html', {'files': files_info, 'directory': current_dir, 'cut_directory' : cut_directory, 'cut_directory2': cut_directory2, 'viewer_path': viewer_path} )
+
+def count_files_by_type(directory):
+    file_counts = {
+        'video': 0,
+        'image': 0,
+        'texte': 0,
+        'pdf': 0,
+        'excel': 0,
+        'audio': 0,
+        'doc': 0,
+        'ppt': 0,
+        'other': 0
+    }
+    for root, dirs, files in os.walk(directory):
+        for name in files:
+            file_type = (
+                'video' if name.endswith(('.avi', '.mp4', '.mkv', '.mov', '.wmv', '.flv', '.mpeg', '.webm')) else
+                'image' if name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff')) else
+                'texte' if name.endswith('.txt') else
+                'pdf' if name.endswith('.pdf') else
+                'excel' if name.endswith(('.csv', '.xlsx', '.xls', '.ods')) else
+                'audio' if name.endswith(('.mp3', '.wav', '.aac', '.flac', '.ogg', '.wma')) else
+                'doc' if name.endswith(('.doc', '.docx', '.odt')) else
+                'ppt' if name.endswith(('.ppt', '.pptx', '.odp')) else
+                'other'
+                )
+            file_counts[file_type] += 1
+    return file_counts
 
 def profile(request):
-    return render(request, "profile.html")
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    base_dir = os.path.join(project_root, 'uploads')
+    file_counts = count_files_by_type(base_dir)
+    return render(request, "profile.html", {'file_counts': file_counts})
 
 
 
