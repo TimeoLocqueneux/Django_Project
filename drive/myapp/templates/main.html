@@ -133,6 +133,30 @@
         const newFolderAnnuler = document.querySelector('.new-folder-annuler');
         const newFolder = document.querySelector('.create-folder');
         const plusButtons = document.querySelectorAll('.plus');
+        const renamebutton = document.querySelectorAll('.plus-rename');
+        const downloadbutton = document.querySelectorAll('.plus-download');
+        const deletebutton = document.querySelectorAll('.plus-delete');
+
+
+        renamebutton.forEach(button => {
+            button.addEventListener('click', function() {
+                const file = this.closest('.file');
+                const name = file.querySelector('.name a').innerText;
+                const newName = prompt('Nouveau nom du fichier', name);
+                if (newName) {
+                    fetch('{% url "rename_file" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({path: "{{ directory|escapejs }}", old_name: name, new_name: newName })
+                })
+                .then(response => response.json())
+            
+            }
+
+        });
 
         sortingButton.addEventListener('click', function() {
             if (popupTri.style.display === 'flex') {
@@ -161,10 +185,12 @@
                 });
             });
     });
+    });
 
     function submitFile() {
         // Soumettre le formulaire lorsque le fichier est sélectionné
         document.getElementById('upload-form').submit();
     }
+
 </script>
 </html>

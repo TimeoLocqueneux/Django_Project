@@ -5,6 +5,9 @@ from .forms import RegisterForm,LoginForm
 from django.contrib import messages
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+import json
+
 
 def get_files_info(directory):
     files_info = []
@@ -112,6 +115,63 @@ def profile(request):
 
 
 
+def rename_file(request):
+    print('la')
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        print(body)
+        new_name = body.get('new_name')
+        path = body.get('path', '')
+        old_name = body.get('old_name', '')
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.join(project_root, 'uploads')
+        current_dir = os.path.join(base_dir, path)
+        old_file_path = os.path.join(current_dir, old_name)
+        new_file_path = os.path.join(current_dir, new_name)
+        if new_name and not os.path.exists(new_file_path):
+            os.rename(old_file_path, new_file_path)
+            return render(request, 'main.html', {'path': path})
+        else:
+            error_message = "Nom de fichier invalide ou fichier existe déjà."
+            return render(request, 'main.html', {'error': error_message, 'path': path})
+    return redirect('main')
+
+def delete_file(request):
+    if request.method == 'POST':
+        file_name = request.POST.get('file_name')
+        path = request.POST.get('path', '')
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.join(project_root, 'uploads')
+        current_dir = os.path.join(base_dir, path)
+        file_path = os.path.join(current_dir, file_name)
+        if os.path.exists(file_path):
+            if os.path.isdir(file_path):
+                os.rmdir(file_path)
+            else:
+                os.remove(file_path)
+            return redirect('main_with_path', path=path)
+        else:
+            error_message = "Fichier introuvable."
+            return render(request, 'main.html', {'error': error_message, 'path': path})
+    return redirect('main')
+
+def download_file(request):
+    if request.method == 'POST':
+        file_name = request.POST.get('file_name')
+        path = request.POST.get('path', '')
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.join(project_root, 'uploads')
+        current_dir = os.path.join(base_dir, path)
+        file_path = os.path.join(current_dir, file_name)
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as file:
+                response = HttpResponse(file.read(), content_type='application/force-download')
+                response['Content-Disposition'] = f'attachment; filename={file_name}'
+                return response
+        else:
+            error_message = "Fichier introuvable."
+            return render(request, 'main.html', {'error': error_message, 'path': path})
+    return redirect('main')
 
 
 
