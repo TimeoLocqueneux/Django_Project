@@ -20,7 +20,17 @@ def get_files_info(directory):
             file_size = os.path.getsize(file_path)
             file_mtime = os.path.getmtime(file_path)
             file_mtime = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d')
-            file_type = 'video' if name.endswith(('.avi', '.mp4', '.mkv')) else ('image' if name.endswith(('.jpg', '.png')) else ('texte' if name.endswith('.txt') else ('pdf' if name.endswith('.pdf') else ('excel' if name.endswith(('.csv', '.xlsx')) else 'other'))))
+            file_type = (
+                'video' if name.endswith(('.avi', '.mp4', '.mkv', '.mov', '.wmv', '.flv', '.mpeg', '.webm')) else
+                'image' if name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff')) else
+                'texte' if name.endswith('.txt') else
+                'pdf' if name.endswith('.pdf') else
+                'excel' if name.endswith(('.csv', '.xlsx', '.xls', '.ods')) else
+                'audio' if name.endswith(('.mp3', '.wav', '.aac', '.flac', '.ogg', '.wma')) else
+                'doc' if name.endswith(('.doc', '.docx', '.odt')) else
+                'ppt' if name.endswith(('.ppt', '.pptx', '.odp')) else
+                'other'
+                )
             files_info.append({
                 'name': os.path.relpath(file_path, directory),
                 'size': (file_size / 1000).__int__(),

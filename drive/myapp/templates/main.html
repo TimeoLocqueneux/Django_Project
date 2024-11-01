@@ -31,7 +31,6 @@
             <div class="import-file bar" onclick="document.getElementById('file-input').click()">
                 <p>IMPORTER UN FICHIER</p>
             </div>
-            <div class="delete-file bar"><p>SUPPRIMER UN FICHIER</p></div>
             <div class="create-folder bar"><p>AJOUTER UN DOSSIER</p></div>
         </div>
 
@@ -73,8 +72,14 @@
                                             <img src="{% static 'img/icons/texte.png' %}" alt="Texte File">
                                         {% elif file.file_type == 'pdf' %}
                                             <img src="{% static 'img/icons/pdf.png' %}" alt="Pdf File">
-                                            {% elif file.file_type == 'excel' %}
-                                                <img src="{% static 'img/icons/excel.png' %}" alt="Calc File">
+                                        {% elif file.file_type == 'excel' %}
+                                            <img src="{% static 'img/icons/excel.png' %}" alt="Calc File">
+                                        {% elif file.file_type == 'audio' %}
+                                            <img src="{% static 'img/icons/audio.png' %}" alt="Audio File">
+                                        {% elif file.file_type == 'doc' %}
+                                            <img src="{% static 'img/icons/doc.png' %}" alt="Doc File">
+                                        {% elif file.file_type == 'ppt' %}
+                                            <img src="{% static 'img/icons/ppt.png' %}" alt="Ppt File">
                                         {% endif %}
                                     </div>
                                     {% if file.type == 'file' %}
@@ -89,9 +94,11 @@
                                 <td class="options">
                                     <div class="plus"><img src="{% static 'img/points.png' %}" alt=""></div>
                                     <div class="popup-plus">
-                                        <img class="plus-rename" src="{% static 'img/rename.png' %}" alt="">
-                                        <img class="plus-download" src="{% static 'img/download.png' %}" alt="">
-                                        <img class="plus-delete" src="{% static 'img/delete.png' %}" alt="">
+                                        <img class="plus-rename" src="{% static 'img/rename.png' %}" title="Rename" alt="">
+                                        <img class="plus-download" src="{% static 'img/download.png' %}" title="Download" alt="">
+                                        <img class="plus-copy" src="{% static 'img/copy.png' %}" title="Copy" alt="">
+                                        <img class="plus-move" src="{% static 'img/move.png' %}" title="Move" alt="">
+                                        <img class="plus-delete" src="{% static 'img/delete.png' %}" title="Delete" alt="">
                                     </div>
                                 </td>
                             </tr>
