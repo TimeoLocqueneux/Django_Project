@@ -20,7 +20,7 @@ def get_files_info(directory):
             file_path = os.path.join(root, name)
             file_size = os.path.getsize(file_path)
             file_mtime = os.path.getmtime(file_path)
-            file_mtime = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d')
+            file_mtime = datetime.fromtimestamp(file_mtime).strftime('%d-%m-%Y')
             file_type = (
                 'video' if name.endswith(('.avi', '.mp4', '.mkv', '.mov', '.wmv', '.flv', '.mpeg', '.webm')) else
                 'image' if name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff')) else
@@ -43,12 +43,13 @@ def get_files_info(directory):
             dir_path = os.path.join(root, name)
             dir_size = sum(os.path.getsize(os.path.join(dir_path, f)) for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f)))
             dir_mtime = os.path.getmtime(dir_path)
-            dir_mtime = datetime.fromtimestamp(dir_mtime).strftime('%Y-%m-%d')
+            dir_mtime = datetime.fromtimestamp(dir_mtime).strftime('%d-%m-%Y')
             files_info.append({
                 'name': os.path.relpath(dir_path, directory),
                 'size': (dir_size / 1000).__int__(),
                 'mtime': dir_mtime,
-                'type': 'directory'
+                'type': 'directory',
+                'file_type': 'directory'
             })
     return files_info
 
@@ -124,7 +125,24 @@ def main(request, path=''):
 
     files_info = get_files_info(current_dir)
 
-    return render(request, 'main.html', {'files': files_info, 'directory': current_dir, 'cut_directory' : cut_directory, 'cut_directory2': cut_directory2, 'viewer_path': viewer_path} )
+    directories = [f for f in files_info if f['type'] == 'directory']
+    files = [f for f in files_info if f['type'] == 'file']
+
+    directories.sort(key=lambda x: x['name'].lower())
+    sort_by = request.GET.get('sort', 'name')
+    reverse = request.GET.get('order', 'asc') == 'desc'
+    if sort_by == 'size':
+        files.sort(key=lambda x: x['size'], reverse=reverse)
+    elif sort_by == 'date':
+        files.sort(key=lambda x: datetime.strptime(x['mtime'], '%d-%m-%Y'), reverse=reverse)
+    elif sort_by == 'type':
+        files.sort(key=lambda x: x['file_type'], reverse=reverse)
+    else:
+        files.sort(key=lambda x: x['name'].lower(), reverse=reverse)
+
+    files_info = directories + files
+    
+    return render(request, 'main.html', {'files': files_info, 'directory': current_dir, 'cut_directory' : cut_directory, 'cut_directory2': cut_directory2, 'viewer_path': viewer_path, 'sort_by': sort_by, 'order': 'desc' if reverse else 'asc'} )
 
 def count_files_by_type(directory):
     file_counts = {

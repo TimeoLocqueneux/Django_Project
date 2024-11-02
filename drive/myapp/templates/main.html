@@ -45,18 +45,17 @@
                 <div class="path">
                     <H1>{{viewer_path}}</H1>
                 </div>
-                <div class="sorting-button">
-                    <img src="{% static 'img/edit.png' %}" alt="">
-                </div>
             </div>
             <div class="explorer-files">
                 <table>
                     <thead>
                         <tr>
-                            <th>Nom</th>
-                            <th>Propriétaire</th>
-                            <th>Dernière modification</th>
-                            <th>Taille du fichier</th>
+                            <th><a href="?sort=name&order={% if sort_by == 'name' and order == 'asc' %}desc{% else %}asc{% endif %}">Nom</a> /
+                                <a href="?sort=type&order=asc">Type</a>
+                            </th>
+                            <th><a href="?sort=date&order={% if sort_by == 'date' and order == 'asc' %}desc{% else %}asc{% endif %}">Date de modification</a></th>
+                            <th><a href="?sort=owner&order={% if sort_by == 'owner' and order == 'asc' %}desc{% else %}asc{% endif %}">Propriétaire</a></th>
+                            <th><a href="?sort=size&order={% if sort_by == 'size' and order == 'asc' %}desc{% else %}asc{% endif %}">Taille du fichier</a></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -88,17 +87,17 @@
                                         <a href="{% url 'main_with_path' cut_directory|add:'/'|add:file.name %}">{{ file.name }}/</a>
                                     {% endif %}
                                 </td>
-                                <td class="owner">USERNAME</td> <!-- Placeholder for owner -->
-                                <td class="date">{{ file.mtime }}</td>
-                                <td class="size">{{ file.size }} Ko</td>
+                                <td class="date">{% if file.type != 'directory' %}{{file.mtime}}{% endif %}</td>
+                                <td class="owner">{% if file.type != 'directory' %}USERNAME{% endif %}</td>
+                                <td class="size">{% if file.type != 'directory' %}{{ file.size }} Ko{% endif %}</td>
                                 <td class="options">
                                     <div class="plus"><img src="{% static 'img/points.png' %}" alt=""></div>
                                     <div class="popup-plus">
-                                        <img class="plus-rename" src="{% static 'img/rename.png' %}" title="Rename" alt="">
-                                        <img class="plus-download" src="{% static 'img/download.png' %}" title="Download" alt="">
-                                        <img class="plus-copy" src="{% static 'img/copy.png' %}" title="Copy" alt="">
-                                        <img class="plus-move" src="{% static 'img/move.png' %}" title="Move" alt="">
-                                        <img class="plus-delete" src="{% static 'img/delete.png' %}" title="Delete" alt="">
+                                        <img class="plus-rename" src="{% static 'img/rename.png' %}" title="Renommer" alt="">
+                                        <img class="plus-download" src="{% static 'img/download.png' %}" title="Télécharger" alt="">
+                                        <img class="plus-copy" src="{% static 'img/copy.png' %}" title="Copier" alt="">
+                                        <img class="plus-move" src="{% static 'img/move.png' %}" title="Déplacer" alt="">
+                                        <img class="plus-delete" src="{% static 'img/delete.png' %}" title="Supprimer" alt="">
                                     </div>
                                 </td>
                             </tr>
@@ -107,16 +106,6 @@
                 </table>
             </div>
         </div>
-    <div class="popup-tri">
-        <div class="tri-title">Trier par</div>
-        <div class="tri-choices">
-            <div class="tri-choice"><p>Nom</p></div>
-            <div class="tri-choice"><p>Type de fichier</p></div>
-            <div class="tri-choice"><p>Propriétaire</p></div>
-            <div class="tri-choice"><p>Dernière modification</p></div>
-            <div class="tri-choice"><p>Taille du fichier</p></div>
-        </div>
-    </div>
     <div class="popup-new-folder">
         <div class="new-folder-title">Ajouter un dossier</div>
         <form action="{% url 'create_folder' %}" method="post" class="new-folder-name">
@@ -143,6 +132,7 @@
         const renamebutton = document.querySelectorAll('.plus-rename');
         const downloadbutton = document.querySelectorAll('.plus-download');
         const deletebutton = document.querySelectorAll('.plus-delete');
+        const triChoices = document.querySelectorAll('.tri-choice');
 
         plusButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -232,9 +222,7 @@
         });
         newFolder.addEventListener('click', function() {
             popupNewFolder.style.display = 'flex';
-        });
-
-       
+        });  
     });
 
 
