@@ -32,6 +32,7 @@ header {
     height: 40px;
     display: flex;
     flex-direction: row;
+    align-items: center;
     background-color: white; /* Crimson */
     border-radius: 5px;
     padding: 5px 10px;
@@ -45,14 +46,23 @@ header {
 .loupe {
     height: 100%;
 }
-.loupe:hover{
-    cursor: pointer;
-}
 
+#search-form{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
 .text-zone {
-    margin: auto;
     font-size: 1em;
     color: #333;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    border: none;
+}
+.text-zone:focus{
+    outline: none;
 }
 
 .user-button {
@@ -159,19 +169,23 @@ table{
 th{
     text-align: left;
     padding: 10px;
-    border-bottom: 1px solid #f5f5f5;
     font-size: 1.3em;
 }
+th a:hover{
+    cursor: pointer;
+    text-decoration: none;
+    color: #FF416C;
+}
 tr{
-    border-bottom: 1px solid #f5f5f5;
+    border-bottom: 1px solid #ffe4e1;
 }
 td{
     padding: 10px;
+    height: 100%;
     align-items: center;
 }
 .name{
     display: flex;
-    flex-direction: row;
 }
 .type img{
     height: 30px;
@@ -185,15 +199,8 @@ a:hover{
     text-decoration: underline;
 }
 
-
-.popup-plus{
-    height: 20px;
-    display: none;
-    flex-direction: row;
-}
 .options{
     display: flex;
-    flex-direction: row;
     align-items: center;
 }
 .plus{
@@ -205,6 +212,9 @@ a:hover{
     cursor: pointer;
 }
 .popup-plus{
+    height: 20px;
+    display: none;
+    flex-direction: row;
     border: #333 solid 2px;
     border-radius: 5px;
     padding: 3px;

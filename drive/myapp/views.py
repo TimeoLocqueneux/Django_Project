@@ -125,6 +125,10 @@ def main(request, path=''):
 
     files_info = get_files_info(current_dir)
 
+    search_query = request.GET.get('search', '').lower()
+    if search_query:
+        files_info = [f for f in files_info if search_query in f['name'].lower()]
+
     directories = [f for f in files_info if f['type'] == 'directory']
     files = [f for f in files_info if f['type'] == 'file']
 
@@ -142,7 +146,7 @@ def main(request, path=''):
 
     files_info = directories + files
     
-    return render(request, 'main.html', {'files': files_info, 'directory': current_dir, 'cut_directory' : cut_directory, 'cut_directory2': cut_directory2, 'viewer_path': viewer_path, 'sort_by': sort_by, 'order': 'desc' if reverse else 'asc'} )
+    return render(request, 'main.html', {'files': files_info, 'directory': current_dir, 'cut_directory' : cut_directory, 'cut_directory2': cut_directory2, 'viewer_path': viewer_path, 'sort_by': sort_by, 'order': 'desc' if reverse else 'asc', 'search_query': search_query} )
 
 def count_files_by_type(directory):
     file_counts = {

@@ -15,7 +15,9 @@
         </div>
         <div class="search-bar">
             <img class="loupe" src="{% static 'img/loupe.png' %}" alt="">
-            <div class="text-zone">search a file</div>
+            <form id="search-form" method="get">
+                <input type="text" id="search-input" class="text-zone" placeholder="Chercher un fichier" name="search" value="{{ search_query }}">
+            </form>
         </div>
         <a href="/profile" class="user-button"><img src="{% static 'img/user.png' %}" alt="" class="user"></a>
     </header>
@@ -133,6 +135,7 @@
         const downloadbutton = document.querySelectorAll('.plus-download');
         const deletebutton = document.querySelectorAll('.plus-delete');
         const triChoices = document.querySelectorAll('.tri-choice');
+        const searchInput = document.querySelector('#search-input');
 
         plusButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -209,20 +212,25 @@
             });
         });
 
-        sortingButton.addEventListener('click', function() {
-            if (popupTri.style.display === 'flex') {
-                popupTri.style.display = 'none';
-            } else {
-                popupTri.style.display = 'flex';
-            }
-        });
-
         newFolderAnnuler.addEventListener('click', function() {
             popupNewFolder.style.display = 'none';
         });
         newFolder.addEventListener('click', function() {
             popupNewFolder.style.display = 'flex';
-        });  
+        }); 
+
+        searchInput.addEventListener('input', function() {
+            const filter = searchInput.value.toLowerCase();
+            const rows = document.querySelectorAll('#file-list .file');
+            rows.forEach(row => {
+                const fileName = row.querySelector('.name a').textContent.toLowerCase();
+                if (fileName.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
     });
 
 
