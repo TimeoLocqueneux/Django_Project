@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.forms import PasswordInput
+from django.contrib.auth.forms import AuthenticationForm
 
 
 class RegisterForm(forms.ModelForm):
@@ -38,18 +39,5 @@ class RegisterForm(forms.ModelForm):
     
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(max_length=254, required=True)
     password = forms.CharField(widget=forms.PasswordInput, required=True)
-
-    def clean(self):
-        email = self.cleaned_data.get('email')
-        password = self.cleaned_data.get('password')
-        try:
-            user = User.objects.get(email=email)
-            if not user.check_password(password):
-                raise ValidationError("Incorrect password.")
-        except User.DoesNotExist:
-            raise ValidationError("No account with this email exists.")
-        
-        return self.cleaned_data
-    

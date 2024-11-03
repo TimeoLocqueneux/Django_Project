@@ -1,13 +1,24 @@
 import os
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from .forms import RegisterForm,LoginForm
 from django.contrib import messages
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 import json
+import logging
 
+def authenticate_with_email(request, email=None, password=None):
+    User = get_user_model()
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return None
+
+    if user.check_password(password):
+        return user
+    return None
 
 
 def get_files_info(directory):
@@ -54,6 +65,8 @@ def get_files_info(directory):
     return files_info
 
 
+logger = logging.getLogger(__name__)
+
 def login_register_view(request):
     if request.method == 'POST':
         if 'register' in request.POST:
@@ -66,38 +79,31 @@ def login_register_view(request):
                 return redirect('main')
             else:
                 messages.error(request, "Il y a eu une erreur avec votre inscription.")
-                
         elif 'login' in request.POST:
             login_form = LoginForm(request.POST)
             register_form = RegisterForm()
             if login_form.is_valid():
-                email = login_form.cleaned_data['email']
-                password = login_form.cleaned_data['password']
-                
-                # Authentification
-                user = authenticate(request, email=email, password=password)
+                email = login_form.cleaned_data.get('email')
+                password = login_form.cleaned_data.get('password')
+                logger.debug(f"Trying to authenticate email: {email}")
+                user = authenticate_with_email(request, email=email, password=password)
                 if user is not None:
                     login(request, user)
                     messages.success(request, "Connexion réussie !")
                     return redirect('main')
                 else:
-                    messages.error(request, "Email ou mot de passe invalide.")
-                    print("Authentification échouée pour l'email :", email)  # Debug
-                    return redirect('main')
+                    logger.debug(f"Authentication failed for email: {email}")
+                    messages.error(request, "Email ou mot de passe incorrect.")
             else:
-                print("Le formulaire de connexion n'est pas valide.", login_form.errors)  # Debug
-
+                logger.debug(f"Login form is invalid: {login_form.errors}")
+                messages.error(request, "Il y a eu une erreur avec votre connexion.")
     else:
         register_form = RegisterForm()
         login_form = LoginForm()
-    
-    return render(request, 'login.html', {
-        'register_form': register_form,
-        'login_form': login_form
-    })
 
+    return render(request, 'login.html', {'register_form': register_form, 'login_form': login_form})
 
-
+@login_required(login_url='login')
 def main(request, path=''):
     # Obtenir le chemin absolu du répertoire source du projet
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -291,3 +297,8 @@ def my_view(request):
     # Récupérer le nom d'utilisateur de l'utilisateur connecté
     username = request.user.username
     return render(request, 'mon_template.html', {'username': username})
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, "Vous avez été déconnecté avec succès.")
+    return redirect('login')
