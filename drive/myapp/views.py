@@ -9,6 +9,8 @@ from django.http import HttpResponse, JsonResponse
 import json
 import logging
 
+base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'uploads')
+
 def authenticate_with_email(request, email=None, password=None):
     User = get_user_model()
     try:
@@ -68,12 +70,18 @@ def get_files_info(directory):
 logger = logging.getLogger(__name__)
 
 def login_register_view(request):
+    global base_dir
+    base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'uploads')
     if request.method == 'POST':
         if 'register' in request.POST:
             register_form = RegisterForm(request.POST)
             login_form = LoginForm()
             if register_form.is_valid():
                 user = register_form.save()
+                #create folder for user
+                user_dir = os.path.join(base_dir, user.username)
+                os.makedirs(user_dir)
+                base_dir = user_dir
                 login(request, user)
                 messages.success(request, "Inscription réussie ! Vous êtes maintenant connecté.")
                 return redirect('main')
@@ -88,6 +96,8 @@ def login_register_view(request):
                 logger.debug(f"Trying to authenticate email: {email}")
                 user = authenticate_with_email(request, email=email, password=password)
                 if user is not None:
+                    base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'uploads', user.username)
+
                     login(request, user)
                     messages.success(request, "Connexion réussie !")
                     return redirect('main')
@@ -105,10 +115,8 @@ def login_register_view(request):
 
 @login_required(login_url='login')
 def main(request, path=''):
-    # Obtenir le chemin absolu du répertoire source du projet
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    base_dir = os.path.join(project_root, 'uploads')
+
     current_dir = os.path.join(base_dir, path)
 
     if not os.path.exists(current_dir):
@@ -117,11 +125,11 @@ def main(request, path=''):
    
     drive_index = current_dir.find('uploads')
     if drive_index != -1:
-        cut_directory = current_dir[drive_index + len('uploads') + 1:]
-        cut_directory2 = cut_directory
+        cut_directory = current_dir[drive_index + len('uploads') + len(request.user.username)+ 2:]
+        cut_directory2 = current_dir[drive_index + len('uploads') + 1:]
     if not cut_directory:
         cut_directory = None
-        cut_directory2 = ''
+        cut_directory2 = request.user.username 
         
     uploads_index = current_dir.find('uploads')
     if uploads_index != -1:
@@ -183,23 +191,17 @@ def count_files_by_type(directory):
     return file_counts
 
 def profile(request):
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    base_dir = os.path.join(project_root, 'uploads')
     file_counts = count_files_by_type(base_dir)
     return render(request, "profile.html", {'file_counts': file_counts})
 
 
 
 def rename_file(request):
-    print('la')
     if request.method == 'POST':
         body = json.loads(request.body)
-        print(body)
         new_name = body.get('new_name')
         path = body.get('path', '')
         old_name = body.get('old_name', '')
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        base_dir = os.path.join(project_root, 'uploads')
         current_dir = os.path.join(base_dir, path)
         old_file_path = os.path.join(current_dir, old_name)
         new_file_path = os.path.join(current_dir, new_name)
@@ -214,12 +216,8 @@ def rename_file(request):
 def delete_file(request):
     if request.method == 'POST':
         body = json.loads(request.body)
-        print(body)
         file_name = body.get('file_name')
         path = body.get('path', '')
-        print(file_name, path)
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        base_dir = os.path.join(project_root, 'uploads')
         current_dir = os.path.join(base_dir, path)
         file_path = os.path.join(current_dir, file_name)
         if os.path.exists(file_path):
@@ -238,8 +236,6 @@ def download_file(request):
         body = json.loads(request.body)
         file_name = body.get('file_name')
         path = body.get('path', '')
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        base_dir = os.path.join(project_root, 'uploads')
         current_dir = os.path.join(base_dir, path)
         file_path = os.path.join(current_dir, file_name)
         if os.path.exists(file_path):
@@ -255,9 +251,7 @@ def import_file(request):
     if request.method == 'POST' and request.FILES['file']:
         uploaded_file = request.FILES['file']
         path = request.POST.get('path', '')
-        
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        base_dir = os.path.join(project_root, 'uploads')
+
         current_dir = os.path.join(base_dir, path)
         
         if not os.path.exists(current_dir):
@@ -275,8 +269,7 @@ def create_folder(request):
         folder_name = request.POST.get('folder_name')
         path = request.POST.get('path', '')
 
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        base_dir = os.path.join(project_root, 'uploads')
+
         current_dir = os.path.join(base_dir, path)
         
         folder_path = os.path.join(current_dir, folder_name)
