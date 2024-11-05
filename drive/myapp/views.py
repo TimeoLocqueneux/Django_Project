@@ -250,6 +250,9 @@ def download_file(request):
 def import_file(request):
     if request.method == 'POST' and request.FILES['file']:
         uploaded_file = request.FILES['file']
+        if uploaded_file.size > 40000000:
+            return render(request, 'main.html', {'error': 'Le fichier est trop volumineux.'})
+
         path = request.POST.get('path', '')
 
         current_dir = os.path.join(base_dir, path)
