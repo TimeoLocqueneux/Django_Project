@@ -119,6 +119,13 @@ main {
 .left-bar:hover a{
     text-decoration: none;
 }
+.logout{
+    background: linear-gradient(#FF416C,#FF4B2B);
+    color: #fff5f5;
+}
+.logout:hover{
+    opacity: 0.9;
+}
 
 .explorer {
     width: 80%;
