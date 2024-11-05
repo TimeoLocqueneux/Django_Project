@@ -190,9 +190,50 @@ def count_files_by_type(directory):
             file_counts[file_type] += 1
     return file_counts
 
+def count_sizes_by_type(directory):
+    file_sizes = {
+        'video': 0,
+        'image': 0,
+        'texte': 0,
+        'pdf': 0,
+        'excel': 0,
+        'audio': 0,
+        'doc': 0,
+        'ppt': 0,
+        'other': 0
+    }
+    for root, dirs, files in os.walk(directory):
+        for name in files:
+            file_type = (
+                'video' if name.endswith(('.avi', '.mp4', '.mkv', '.mov', '.wmv', '.flv', '.mpeg', '.webm')) else
+                'image' if name.endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff')) else
+                'texte' if name.endswith('.txt') else
+                'pdf' if name.endswith('.pdf') else
+                'excel' if name.endswith(('.csv', '.xlsx', '.xls', '.ods')) else
+                'audio' if name.endswith(('.mp3', '.wav', '.aac', '.flac', '.ogg', '.wma')) else
+                'doc' if name.endswith(('.doc', '.docx', '.odt')) else
+                'ppt' if name.endswith(('.ppt', '.pptx', '.odp')) else
+                'other'
+                )
+            file_sizes[file_type] += (os.path.getsize(os.path.join(root, name))/ 1000000).__round__(2)
+    return file_sizes
+
+def calculate_total_storage_used(user,directory):
+    total_storage = 0
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            total_storage += os.path.getsize(os.path.join(root, file))
+    return (total_storage / 1000000).__round__(2)
+
 def profile(request):
+    total_storage_used = calculate_total_storage_used(request.user,base_dir)
+    max_storage = 100
     file_counts = count_files_by_type(base_dir)
-    return render(request, "profile.html", {'file_counts': file_counts})
+    file_sizes = count_sizes_by_type(base_dir)
+    storage_percentage = (total_storage_used / max_storage) * 100
+    empty_percentage = ((max_storage - total_storage_used) / max_storage) * 100
+    print(file_sizes)
+    return render(request, "profile.html", {'file_counts': file_counts, 'file_sizes':file_sizes, 'total_storage_used': total_storage_used, 'max_storage': max_storage, 'remaining_storage': max_storage - total_storage_used, 'storage_percentage': storage_percentage, 'empty_percentage': empty_percentage})
 
 
 
