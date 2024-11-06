@@ -89,9 +89,9 @@
                                         {% endif %}
                                     </div>
                                     {% if file.type == 'file' %}
-                                        <a href="/uploads/{{cut_directory2}}/{{ file.name }}" target="_blank">{{ file.name }}</a>
+                                        <a href="/uploads/{{cut_directory2}}/{{ file.name }}" id='file-{{file.name}}' draggable="true" ondragstart="drag(event)" target="_blank" >{{ file.name }}</a>
                                     {% elif file.type == 'directory' %}
-                                        <a href="{% url 'main_with_path' cut_directory|add:'/'|add:file.name %}">{{ file.name }}/</a>
+                                        <a href="{% url 'main_with_path' cut_directory|add:'/'|add:file.name %}" id='folder-{{file.name}}' ondrop="drop(event)" ondragover="allowDrop(event)">{{ file.name }}/</a>
                                     {% endif %}
                                 </td>
                                 <td class="date">{% if file.type != 'directory' %}{{file.mtime}}{% endif %}</td>
@@ -129,6 +129,41 @@
 </body>
 
 <script>
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+        var file = document.getElementById(data);
+        var file_name = file.innerText;
+        var file_type = file.id.split('-')[0];
+        var folder = ev.target;
+        var folder_name = folder.innerText;
+        var folder_type = folder.id.split('-')[0];
+        console.log('{% url "move_file" %}', '{% url "download_file" %}', "{{ directory|escapejs }}");
+        if (folder_type == 'folder' && file_type == 'file') {
+            fetch('{% url "move_file" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({path: "{{ directory|escapejs }}", file_name: file_name, folder_name: folder_name })
+            })
+            .then(response => response.json())
+            console.log('file moved');
+            locaton.reload();
+            
+            
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const sortingButton = document.querySelector('.sorting-button');
         const popupTri = document.querySelector('.popup-tri');
@@ -240,7 +275,6 @@
 
 
     function submitFile() {
-        // Soumettre le formulaire lorsque le fichier est sélectionné
         document.getElementById('upload-form').submit();
     }
 
