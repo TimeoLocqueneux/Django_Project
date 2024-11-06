@@ -60,10 +60,6 @@ main{
     border-radius: 20px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
-.graph img{
-    height: auto;
-    width: 100%;
-}
 
 .space-left-container{
     display: flex;

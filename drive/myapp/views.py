@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from .forms import RegisterForm,LoginForm
 from django.contrib import messages
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 import json
@@ -222,6 +222,46 @@ def calculate_total_storage_used(user,directory):
             total_storage += os.path.getsize(os.path.join(root, file))
     return (total_storage / 1000000).__round__(2)
 
+def calculate_cumulative_storage_over_time(directory):
+    all_dates = []
+
+    for root, dirs, files in os.walk(directory):
+        for name in files:
+            file_path = os.path.join(root, name)
+            file_date = datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%d-%m-%Y')
+            if file_date not in all_dates:
+                all_dates.append(file_date)
+    sorted_dates = sorted(all_dates, key=lambda date: datetime.strptime(date, '%d-%m-%Y'))
+
+    start_date = datetime.strptime(sorted_dates[0], '%d-%m-%Y')
+    end_date = datetime.now()
+    current_date = start_date
+    while current_date <= end_date:
+        if current_date.strftime('%d-%m-%Y') not in all_dates:
+            all_dates.append(current_date.strftime('%d-%m-%Y'))
+        current_date += timedelta(days=1)
+    all_dates.sort(key=lambda date: datetime.strptime(date, '%d-%m-%Y'))
+    
+    cumulative_storage_over_time = []
+    cumulative_sum = 0
+    for date in all_dates:
+        daily_storage = calculate_storage_by_date(directory, date)
+        cumulative_sum += daily_storage
+        cumulative_storage_over_time.append({'date': date, 'cumulative_storage': cumulative_sum})
+
+    return cumulative_storage_over_time
+
+def calculate_storage_by_date(directory, target_date):
+    total_size = 0
+    target_date = datetime.strptime(target_date, '%d-%m-%Y')
+    for root, dirs, files in os.walk(directory):
+        for name in files:
+            file_path = os.path.join(root, name)
+            file_date = datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%d-%m-%Y')
+            if datetime.strptime(file_date, '%d-%m-%Y') == target_date:
+                total_size += os.path.getsize(file_path)
+    return (total_size / 1000000).__round__(2)
+
 def profile(request):
     total_storage_used = calculate_total_storage_used(request.user,base_dir)
     max_storage = 100
@@ -229,8 +269,8 @@ def profile(request):
     file_sizes = count_sizes_by_type(base_dir)
     storage_percentage = (total_storage_used / max_storage) * 100
     empty_percentage = ((max_storage - total_storage_used) / max_storage) * 100
-    print(file_sizes)
-    return render(request, "profile.html", {'file_counts': file_counts, 'file_sizes':file_sizes, 'total_storage_used': total_storage_used, 'max_storage': max_storage, 'remaining_storage': max_storage - total_storage_used, 'storage_percentage': storage_percentage, 'empty_percentage': empty_percentage})
+    storage_over_time = calculate_cumulative_storage_over_time(base_dir)
+    return render(request, "profile.html", {'file_counts': file_counts, 'file_sizes':file_sizes, 'total_storage_used': total_storage_used, 'max_storage': max_storage, 'remaining_storage': max_storage - total_storage_used, 'storage_percentage': storage_percentage, 'empty_percentage': empty_percentage, 'storage_over_time': storage_over_time})
 
 
 
