@@ -48,13 +48,13 @@
                 <canvas id="sizeTypesChart"></canvas>
             </div>
             <div class="graph">
-                <h2>Evolution de votre stockage</h2>
-                <img src="{% static 'img/exemple_graph.png' %}" alt="">
+                <h2>Votre stockage au cours du temps</h2>
+                <canvas id="storageUsedOverTime"></canvas>
             </div>
         </div>
     </main>
 </body>
-<script>
+<script class="file-type">
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('fileTypesChart').getContext('2d');
         const fileTypesChart = new Chart(ctx, {
@@ -106,7 +106,7 @@
         });
     });
 </script>
-<script>
+<script class="file-size">
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('sizeTypesChart').getContext('2d');
         const sizeTypesChart = new Chart(ctx, {
@@ -152,6 +152,40 @@
                             },
                             color: '#333'
                         }
+                    }
+                }
+            }
+        });
+    });
+</script>
+<script class="size-over-time">
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('storageUsedOverTime').getContext('2d');
+        const storageUsedOverTimeChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [{% for entry in storage_over_time %}'{{ entry.date }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+                datasets: [{
+                    label: 'Sample Data',
+                    data: [{% for entry in storage_over_time %}{{ entry.cumulative_storage }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                    backgroundColor: 'rgba(255, 75, 43, 0.4)',
+                    borderColor: 'rgba(255, 75, 43, 1)',
+                    borderWidth: 1,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false,
                     }
                 }
             }
