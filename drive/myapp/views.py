@@ -221,7 +221,7 @@ def calculate_total_storage_used(user,directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
             total_storage += os.path.getsize(os.path.join(root, file))
-    return (total_storage / 1000000).__round__(2)
+    return (total_storage / 1000000).__round__(2), total_storage
 
 def calculate_cumulative_storage_over_time(directory):
     all_dates = []
@@ -264,7 +264,7 @@ def calculate_storage_by_date(directory, target_date):
     return (total_size / 1000000).__round__(2)
 
 def profile(request):
-    total_storage_used = calculate_total_storage_used(request.user,base_dir)
+    total_storage_used = calculate_total_storage_used(request.user,base_dir)[0]
     max_storage = 100
     file_counts = count_files_by_type(base_dir)
     file_sizes = count_sizes_by_type(base_dir)
@@ -299,9 +299,10 @@ def delete_file(request):
         path = body.get('path', '')
         current_dir = os.path.join(base_dir, path)
         file_path = os.path.join(current_dir, file_name)
+        print(file_path)
         if os.path.exists(file_path):
             if os.path.isdir(file_path):
-                os.rmdir(file_path)
+                shutil.rmtree(file_path)
             else:
                 os.remove(file_path)
             return redirect('main_with_path', path=path)
@@ -377,8 +378,11 @@ def copy_file(request):
 def import_file(request):
     if request.method == 'POST' and request.FILES['file']:
         uploaded_file = request.FILES['file']
+        total_storage_used = calculate_total_storage_used(request.user,base_dir)[1]
         if uploaded_file.size > 40000000:
             return render(request, 'main.html', {'error': 'Le fichier est trop volumineux.'})
+        if uploaded_file.size + total_storage_used > 100000000:
+            return render(request, 'main.html', {'error': 'Pas assez d\'espace de stockage.'})
 
         path = request.POST.get('path', '')
 
