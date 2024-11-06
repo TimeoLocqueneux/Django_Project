@@ -114,7 +114,7 @@
                                     {% if file.type == 'file' %}
                                         <a href="/uploads/{{cut_directory2}}/{{ file.name }}" id='file-{{file.name}}' draggable="true" ondragstart="drag(event)" target="_blank" >{{ file.name }}</a>
                                     {% elif file.type == 'directory' %}
-                                        <a href="{% url 'main_with_path' cut_directory|add:'/'|add:file.name %}" id='folder-{{file.name}}' ondrop="drop(event)" ondragover="allowDrop(event)">{{ file.name }}/</a>
+                                        <a href="{% url 'main_with_path' cut_directory|add:'/'|add:file.name %}" id='folder-{{file.name}}' draggable="true" ondragstart="drag(event)" ondrop="drop(event)" ondragover="allowDrop(event)">{{ file.name }}/</a>
                                     {% endif %}
                                 </td>
                                 <td class="date">{% if file.type != 'directory' %}{{file.mtime}}{% endif %}</td>
@@ -161,6 +161,7 @@
     }
 
     function drop(ev) {
+        console.log('drop');
         ev.preventDefault();
         var data = ev.dataTransfer.getData("text");
         var file = document.getElementById(data);
@@ -169,6 +170,7 @@
         var folder = ev.target;
         var folder_name = folder.innerText;
         var folder_type = folder.id.split('-')[0];
+        console.log('file type :', file_type, 'folder type :', folder_type, 'file name :', file_name, 'folder name :', folder_name);
         if (folder_type == 'folder' && file_type == 'file') {
             fetch('{% url "move_file" %}', {
                 method: 'POST',
@@ -180,12 +182,22 @@
             })
             .then(response => response.json())
             console.log('file moved');
-            location.reload();
-            
-            
+            location.reload();  
         }
-        
-        
+        else if (folder_type == 'folder' && file_type == 'folder') {
+            fetch('{% url "move_file" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({path: "{{ directory|escapejs }}", file_name: file_name, folder_name: folder_name })
+            })
+            .then(response => response.json())
+            console.log('folder moved');
+            location.reload();
+        }
+         
     }
 
     document.addEventListener('DOMContentLoaded', function() {
