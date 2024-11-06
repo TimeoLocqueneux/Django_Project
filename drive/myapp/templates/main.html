@@ -148,6 +148,7 @@
     </div>
     </main>
     <div id="contextMenu">
+        <h4 id="copy">Copier</h4>
         <h4 id="paste">Coller</h4>
     </div>
     <footer></footer>
@@ -161,12 +162,27 @@
 
     // Event listener for the right-click (context menu)
     content.addEventListener("contextmenu", function(event) {
-        event.preventDefault(); // Prevent the default context menu
+        // Check if the right-clicked element is a file or folder
+        if (event.target.closest('.file')) {
+            localStorage.setItem('copy-paste', event.target.closest('.file').querySelectorAll('.name a')[0].href);
+            console.log('copy-paste :', localStorage.getItem('copy-paste'));
+            event.preventDefault(); // Prevent the default context menu
 
-        // Show the custom context menu at the mouse position
-        contextMenu.style.left = `${event.pageX}px`;
-        contextMenu.style.top = `${event.pageY}px`;
-        contextMenu.style.display = "block";
+            // Show the custom context menu at the mouse position
+            contextMenu.style.left = `${event.pageX}px`;
+            contextMenu.style.top = `${event.pageY}px`;
+            contextMenu.style.display = "block";
+        }
+        else if (event.target.closest('.explorer-files')) {
+            event.preventDefault(); // Prevent the default context menu
+            localStorage.setItem('copy-paste', event.target.closest('.explorer-files').querySelectorAll('.name a')[0]);
+            console.log('copy-paste :', localStorage.getItem('copy-paste'));
+    
+            // Show the custom context menu at the mouse position
+            contextMenu.style.left = `${event.pageX}px`;
+            contextMenu.style.top = `${event.pageY}px`;
+            contextMenu.style.display = "block";
+        }
     });
 
     // Hide the context menu when clicking anywhere on the page
@@ -174,14 +190,31 @@
         contextMenu.style.display = "none";
     });
 
-    // Handle the options in the custom context menu
-    document.getElementById("paste").addEventListener("click", function() {
-        alert("paste clicked");
+    document.getElementById("copy").addEventListener("click", function() {
+        file_name = localStorage.getItem('copy-paste');
+        localStorage.setItem('copy', file_name);
         contextMenu.style.display = "none"; // Hide the menu
     });
+    document.getElementById("paste").addEventListener("click", function() {
+        file_name = localStorage.getItem('copy');
+        file_name = file_name.replace('http://127.0.0.1:8000', '');
+        console.log('file name :', file_name);
+        fetch('{% url "copy_file" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({path: "{{ directory|escapejs }}", file_name: file_name})
+        })
+        .then(response => response.json())
+        console.log('file copied');
+        contextMenu.style.display = "none"; // Hide the menu
+        location.reload();
+    });
+    
 </script>
 <script>
-    localStorage.setItem('copy', false);
     function allowDrop(ev) {
         ev.preventDefault();
     }

@@ -14,5 +14,6 @@ urlpatterns = [
     path('delete-file/', views.delete_file, name='delete_file'),
     path('download-file/', views.download_file, name='download_file'),
     path('move-file/', views.move_file, name='move_file'),
+    path('copy-file/', views.copy_file, name='copy_file'),
     path('<path:path>/', views.main, name='main_with_path'),
     ]
