@@ -350,6 +350,26 @@ def move_file(request):
             return render(request, 'main.html', {'error': error_message, 'path': path})
     return redirect('main')
 
+def copy_file(request):
+    if request.method == 'POST':
+        body = json.loads(request.body)
+        file_name = body.get('file_name')
+        folder_name = body.get('folder_name')
+        path = body.get('path', '')
+        current_dir = os.path.join(base_dir, path)
+        file_path = os.path.join(current_dir, file_name)
+        new_folder_path = os.path.join(current_dir, folder_name)
+        new_file_path = os.path.join(new_folder_path, file_name)
+        if os.path.exists(file_path) and os.path.exists(new_folder_path):
+            if os.path.isdir(file_path):
+                shutil.copytree(file_path, new_folder_path)
+            else:
+                shutil.copy2(file_path, new_file_path)
+            return redirect('main_with_path', path=folder_name)
+        else:
+            error_message = "Fichier ou dossier introuvable."
+            return render(request, 'main.html', {'error': error_message, 'path': path})
+    return redirect('main')
 
 
 def import_file(request):

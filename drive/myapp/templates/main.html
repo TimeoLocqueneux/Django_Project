@@ -152,6 +152,7 @@
 </body>
 
 <script>
+    localStorage.setItem('copy', false);
     function allowDrop(ev) {
         ev.preventDefault();
     }
@@ -210,7 +211,8 @@
         const renamebutton = document.querySelectorAll('.plus-rename');
         const downloadbutton = document.querySelectorAll('.plus-download');
         const deletebutton = document.querySelectorAll('.plus-delete');
-        const move_back = document.querySelectorAll('.plus-move'); 
+        const move_back = document.querySelectorAll('.plus-move');
+        const copybutton = document.querySelectorAll('.plus-copy');
         const triChoices = document.querySelectorAll('.tri-choice');
         const searchInput = document.querySelector('#search-input');
         const errorPopup = document.getElementById('error-popup');
@@ -317,6 +319,15 @@
                 location.reload();
             });
         });
+
+        copybutton.forEach(button => {
+            button.addEventListener('click', function() {
+                const file = this.closest('.file');
+                const name = file.querySelector('.name a').innerText;
+                localStorage.setItem('copy', name);
+            });
+        });
+        
 
         newFolderAnnuler.addEventListener('click', function() {
             popupNewFolder.style.display = 'none';
