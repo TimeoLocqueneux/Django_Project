@@ -78,7 +78,6 @@ def login_register_view(request):
             login_form = LoginForm()
             if register_form.is_valid():
                 user = register_form.save()
-                #create folder for user
                 user_dir = os.path.join(base_dir, user.username)
                 os.makedirs(user_dir)
                 base_dir = user_dir
@@ -96,8 +95,7 @@ def login_register_view(request):
                 logger.debug(f"Trying to authenticate email: {email}")
                 user = authenticate_with_email(request, email=email, password=password)
                 if user is not None:
-                    base_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'uploads', user.username)
-
+                    base_dir= os.path.join(base_dir, user.username)
                     login(request, user)
                     messages.success(request, "Connexion réussie !")
                     return redirect('main')
@@ -121,8 +119,7 @@ def main(request, path=''):
 
     if not os.path.exists(current_dir):
         current_dir = base_dir
-    
-   
+
     drive_index = current_dir.find('uploads')
     if drive_index != -1:
         cut_directory = current_dir[drive_index + len('uploads') + len(request.user.username)+ 2:]
@@ -159,7 +156,7 @@ def main(request, path=''):
         files.sort(key=lambda x: x['name'].lower(), reverse=reverse)
 
     files_info = directories + files
-    
+            
     return render(request, 'main.html', {'files': files_info, 'directory': current_dir, 'cut_directory' : cut_directory, 'cut_directory2': cut_directory2, 'viewer_path': viewer_path, 'sort_by': sort_by, 'order': 'desc' if reverse else 'asc', 'search_query': search_query} )
 
 def count_files_by_type(directory):
@@ -295,7 +292,7 @@ def move_file(request):
         path = body.get('path', '')
         current_dir = os.path.join(base_dir, path)
         file_path = os.path.join(current_dir, file_name)
-        new_folder_path = os.path.join(base_dir, folder_name)
+        new_folder_path = os.path.join(current_dir, folder_name)
         new_file_path = os.path.join(new_folder_path, file_name)
 
         if os.path.exists(file_path) and os.path.exists(new_folder_path):
@@ -303,6 +300,7 @@ def move_file(request):
             return render(request, 'main.html', {'path': folder_name})
         
         else:
+            print('erreur')
             error_message = "Fichier ou dossier introuvable."
             return render(request, 'main.html', {'error': error_message, 'path': path})
     return redirect('main')

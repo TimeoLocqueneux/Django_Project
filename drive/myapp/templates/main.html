@@ -103,7 +103,7 @@
                                         <img class="plus-rename" src="{% static 'img/rename.png' %}" title="Renommer" alt="">
                                         <img class="plus-download" src="{% static 'img/download.png' %}" title="Télécharger" alt="">
                                         <img class="plus-copy" src="{% static 'img/copy.png' %}" title="Copier" alt="">
-                                        <img class="plus-move" src="{% static 'img/move.png' %}" title="Déplacer" alt="">
+                                        <img class="plus-move" src="{% static 'img/move.png' %}" title="reculer" alt="">
                                         <img class="plus-delete" src="{% static 'img/delete.png' %}" title="Supprimer" alt="">
                                     </div>
                                 </td>
@@ -146,7 +146,7 @@
         var folder = ev.target;
         var folder_name = folder.innerText;
         var folder_type = folder.id.split('-')[0];
-        console.log('{% url "move_file" %}', '{% url "download_file" %}', "{{ directory|escapejs }}");
+        console.log('{% url "move_file" %}', '{% url "download_file" %}', "{{ directory|escapejs }}/");
         if (folder_type == 'folder' && file_type == 'file') {
             fetch('{% url "move_file" %}', {
                 method: 'POST',
@@ -158,7 +158,7 @@
             })
             .then(response => response.json())
             console.log('file moved');
-            locaton.reload();
+            location.reload();
             
             
         }
@@ -203,6 +203,7 @@
                         },
                     body: JSON.stringify({path: "{{ directory|escapejs }}", old_name: name, new_name: newName })
                 })
+                location.reload();
                 }
             });
 
@@ -222,6 +223,7 @@
                 })
                 .then(response => response.json())
                 document.querySelectorAll('.popup-plus').forEach(p => p.style.display = 'none');
+                location.reload();
                     
                 
             });
