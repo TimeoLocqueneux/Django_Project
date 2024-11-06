@@ -294,13 +294,12 @@ def move_file(request):
         file_path = os.path.join(current_dir, file_name)
         new_folder_path = os.path.join(current_dir, folder_name)
         new_file_path = os.path.join(new_folder_path, file_name)
-
+        print(file_path, new_file_path, new_folder_path)
         if os.path.exists(file_path) and os.path.exists(new_folder_path):
             os.rename(file_path, new_file_path)
             return render(request, 'main.html', {'path': folder_name})
         
         else:
-            print('erreur')
             error_message = "Fichier ou dossier introuvable."
             return render(request, 'main.html', {'error': error_message, 'path': path})
     return redirect('main')
