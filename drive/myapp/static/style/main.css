@@ -295,3 +295,18 @@ a:hover{
     cursor: pointer;
     margin-bottom: 10px;
 }
+
+#contextMenu {
+    position: absolute;
+    display: none;
+    background-color: #ffe4e1;
+    border: #f5f5f5 solid 1px;
+    z-index: 1000;
+    border-radius: 4px;
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+#contextMenu:hover{
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
