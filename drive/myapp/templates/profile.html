@@ -27,17 +27,28 @@
         <a href="/main" class="header-home-button"><img src="{% static 'img/home.png' %}" alt="" class="user"></a>
     </header>
     <main>
+        <div class="space-left-container">
+            <div class="space-left-text">
+                <h3>Il vous reste {{ remaining_storage }} Mo de stockage</h3>
+            </div>
+            <div class="space-left-bar">
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" style="width: {{ storage_percentage }}%;"></div>
+                    <div class="progress-bar-empty" style="width: {{ empty_percentage }}%;"></div>
+                </div>
+            </div>
+        </div>
         <div class="graphs">
             <div class="graph">
                 <h2>Vos types de fichiers</h2>
                 <canvas id="fileTypesChart"></canvas>
             </div>
             <div class="graph">
-                <h2>Utilisateurs qui partagent avec vous</h2>
-                <img src="{% static 'img/exemple_graph.png' %}" alt="">
+                <h2>Votre stockage par type de fichier</h2>
+                <canvas id="sizeTypesChart"></canvas>
             </div>
             <div class="graph">
-                <h2>Utilisateurs avec qui vous partagez</h2>
+                <h2>Evolution de votre stockage</h2>
                 <img src="{% static 'img/exemple_graph.png' %}" alt="">
             </div>
         </div>
@@ -62,6 +73,58 @@
                         {{ file_counts.doc }},
                         {{ file_counts.ppt }},
                         {{ file_counts.other }}
+                    ],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(128, 0, 128, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(0, 128, 0, 1)',
+                        'rgba(255, 0, 0, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'right',
+                        labels: {
+                            font: {
+                                family: 'Arial',
+                                size: 13,
+                            },
+                            color: '#333'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('sizeTypesChart').getContext('2d');
+        const sizeTypesChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Vidéos', 'Images', 'Textes', 'PDF', 'Feuilles de calcul', 'Audios', 'Documents', 'Présentations', 'Autres'],
+                datasets: [{
+                    label: 'Mo utilisés',
+                    data: [
+                        {{ file_sizes.video }},
+                        {{ file_sizes.image }},
+                        {{ file_sizes.texte }},
+                        {{ file_sizes.pdf }},
+                        {{ file_sizes.excel }},
+                        {{ file_sizes.audio }},
+                        {{ file_sizes.doc }},
+                        {{ file_sizes.ppt }},
+                        {{ file_sizes.other }}
                     ],
                     backgroundColor: [
                         'rgba(54, 162, 235, 1)',
