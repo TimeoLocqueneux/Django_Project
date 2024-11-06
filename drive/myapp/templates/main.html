@@ -76,7 +76,7 @@
                     <H1>{{viewer_path}}</H1>
                 </div>
             </div>
-            <div class="explorer-files">
+            <div class="explorer-files" id="explorer-files">
                 <table>
                     <thead>
                         <tr>
@@ -147,10 +147,39 @@
         <div class="new-folder-annuler">Annuler</div>
     </div>
     </main>
-
+    <div id="contextMenu">
+        <h4 id="paste">Coller</h4>
+    </div>
     <footer></footer>
 </body>
 
+
+<script class="context-menu">
+    // Get references to the elements
+    const content = document.getElementById("explorer-files");
+    const contextMenu = document.getElementById("contextMenu");
+
+    // Event listener for the right-click (context menu)
+    content.addEventListener("contextmenu", function(event) {
+        event.preventDefault(); // Prevent the default context menu
+
+        // Show the custom context menu at the mouse position
+        contextMenu.style.left = `${event.pageX}px`;
+        contextMenu.style.top = `${event.pageY}px`;
+        contextMenu.style.display = "block";
+    });
+
+    // Hide the context menu when clicking anywhere on the page
+    document.addEventListener("click", function() {
+        contextMenu.style.display = "none";
+    });
+
+    // Handle the options in the custom context menu
+    document.getElementById("paste").addEventListener("click", function() {
+        alert("paste clicked");
+        contextMenu.style.display = "none"; // Hide the menu
+    });
+</script>
 <script>
     localStorage.setItem('copy', false);
     function allowDrop(ev) {
