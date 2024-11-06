@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="{% static 'style/main.css' %}">
     <title>Storage</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .popup {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .popup.active {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -40,6 +56,13 @@
                 <p>DECONNEXION</p>
             </a>
         </div>
+
+        {% if error %}
+        <div class="popup" id="error-popup">
+            <p>{{ error }}</p>
+            <button onclick="closePopup()">OK</button>
+        </div>
+        {% endif %}
 
         <form id="upload-form" action="{% url 'import_file' %}" method="post" enctype="multipart/form-data" style="display: none;">
             {% csrf_token %}
@@ -162,6 +185,8 @@
             
             
         }
+        
+        
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -176,6 +201,10 @@
         const deletebutton = document.querySelectorAll('.plus-delete');
         const triChoices = document.querySelectorAll('.tri-choice');
         const searchInput = document.querySelector('#search-input');
+        const errorPopup = document.getElementById('error-popup');
+        const closePopupButton = document.querySelector('#error-popup button');
+                
+    
 
         plusButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -273,6 +302,16 @@
                 }
             });
         });
+
+        if (errorPopup) {
+                errorPopup.classList.add('active');
+            }
+        
+        closePopupButton.addEventListener('click', function() {
+            errorPopup.classList.remove('active');
+            history.back();
+        });
+        
     });
 
 
