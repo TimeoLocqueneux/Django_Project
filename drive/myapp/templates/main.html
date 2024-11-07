@@ -7,22 +7,6 @@
     <link rel="stylesheet" href="{% static 'style/main.css' %}">
     <title>Storage</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        .popup {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-        .popup.active {
-            display: block;
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -58,9 +42,9 @@
         </div>
 
         {% if error %}
-        <div class="popup" id="error-popup">
-            <p>{{ error }}</p>
-            <button onclick="closePopup()">OK</button>
+        <div class="popup-error" id="error-popup">
+            <h3>{{ error }}</h3>
+            <button class="popup-error-button" onclick="closePopup()">OK</button>
         </div>
         {% endif %}
 

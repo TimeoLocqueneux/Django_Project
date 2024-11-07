@@ -310,3 +310,32 @@ a:hover{
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
+
+.popup-error {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #ffe4e1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 4px;
+}
+.popup-error-button {
+    background-color: #333;
+    color: #f5f5f5;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+.popup-error-button:hover {
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
