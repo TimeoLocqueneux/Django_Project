@@ -221,7 +221,9 @@ def calculate_total_storage_used(user,directory):
     for root, dirs, files in os.walk(directory):
         for file in files:
             total_storage += os.path.getsize(os.path.join(root, file))
-    return (total_storage / 1000000).__round__(2), total_storage
+            total_storage_round = (total_storage / 1000000).__round__(2)
+            print(total_storage_round,total_storage)
+    return total_storage_round, total_storage
 
 def calculate_cumulative_storage_over_time(directory):
     all_dates = []
@@ -271,7 +273,7 @@ def profile(request):
     storage_percentage = (total_storage_used / max_storage) * 100
     empty_percentage = ((max_storage - total_storage_used) / max_storage) * 100
     storage_over_time = calculate_cumulative_storage_over_time(base_dir)
-    return render(request, "profile.html", {'file_counts': file_counts, 'file_sizes':file_sizes, 'total_storage_used': total_storage_used, 'max_storage': max_storage, 'remaining_storage': max_storage - total_storage_used, 'storage_percentage': storage_percentage, 'empty_percentage': empty_percentage, 'storage_over_time': storage_over_time})
+    return render(request, "profile.html", {'file_counts': file_counts, 'file_sizes':file_sizes, 'total_storage_used': total_storage_used, 'max_storage': max_storage, 'remaining_storage': (max_storage - total_storage_used).__round__(2), 'storage_percentage': storage_percentage, 'empty_percentage': empty_percentage, 'storage_over_time': storage_over_time})
 
 
 
